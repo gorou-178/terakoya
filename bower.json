@@ -1,0 +1,14 @@
+{
+  "name": "terakoya",
+  "private": true,
+  "dependencies": {
+    "bootstrap-sass-official": "~3.2.0",
+    "modernizr": "~2.8.2",
+    "socket.io-client": "~1.1.0",
+    "font-awesome": "~4.2.0",
+    "jquery": "~2.1.1",
+    "underscore": "~1.7.0",
+    "vue": "~0.10.6",
+    "jquery-dateFormat": "~1.0.2"
+  }
+}
