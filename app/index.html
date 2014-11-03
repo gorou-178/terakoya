@@ -31,23 +31,23 @@
     </div>
 
     <div class="row">
-        <div class="col-md-7">
+        <div class="col-md-7 live-video-box">
             <video id="local-video" class="real-time-video" autoplay></video>
+            <video id="remote-video" class="real-time-video" autoplay></video>
+            <input type="hidden" name="sendSdp" value="" v-model="sendSdp" />
+            <input type="hidden" name="sendIce" value="" v-model="sendIce" />
+            <input type="hidden" name="receiveSdp" value="" v-model="receiveSdp" />
+            <input type="hidden" name="receiveIce" value="" v-model="receiveIce" />
         </div>
-        <div class="col-md-5">
-            <div class="toolbar">
+        <div class="col-md-5 toolbar">
+            <div class="palette">
                 <ul>
-                    <li id="black"></li>
-                    <li id="blue"></li>
-                    <li id="red"></li>
-                    <li id="green"></li>
+                    <li v-repeat="palettes" v-class="color, active: active" v-on="click: setColor(this)"></li>
                 </ul>
             </div>
-            <div class="toolbar">
+            <div class="brush">
                 <ul>
-                    <li id="small">S</li>
-                    <li id="middle">M</li>
-                    <li id="large">L</li>
+                    <li v-repeat="brushs" v-on="click: setBrush(this)">{{sizeName}}</li>
                 </ul>
             </div>
             <div id="drawCanvas"></div>
@@ -102,6 +102,7 @@
 <script src="bower_components/jquery-dateFormat/dist/jquery-dateFormat.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
+<script src="bower_components/socket.io-client/socket.io.js"></script>
 
 <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
 <script>
@@ -119,10 +120,6 @@
     }(window, document, 'script', 'ga'));
     ga('create', 'UA-XXXXX-X');
     ga('send', 'pageview');
-</script>
-
-<script type="x-template" id="liveCanvas">
-    <canvas id="canvas"></canvas>
 </script>
 
 <!-- build:js({app,.tmp}) scripts/main.js -->
