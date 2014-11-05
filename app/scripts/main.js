@@ -108,6 +108,7 @@ $(function(){
             iceSeparator: '------ ICE Candidate -------',
             peerStarted: false,
             remote_down: false,
+            timer: undefined,
             mediaConstraints: {
                 'mandatory': {
                     'OfferToReceiveAudio':false,
@@ -134,7 +135,7 @@ $(function(){
                     socketView.onAnswer(evt);
                 } else if (evt.type === 'candidate' && socketView.peerStarted) {
                     console.log('Received ICE candidate...');
-                    this.onCandidate(evt);
+                    socketView.onCandidate(evt);
                 } else if (evt.type === 'user dissconnected' && socketView.peerStarted) {
                     console.log("disconnected");
                     socketView.stop();
@@ -158,15 +159,12 @@ $(function(){
                     }
                 }
             },
+
             init: function() {
                 socket = io.connect('http://localhost:' + this.port + '/');
                 socket.on('connect', this.onOpend)
                       .on('message', this.onMessage);
-
             },
-
-
-
 
             onSDP: function(evt) {
                 var evt = JSON.parse(this.receiveSdp);
@@ -207,6 +205,7 @@ $(function(){
                 var candidate = new RTCIceCandidate({sdpMLineIndex:evt.sdpMLineIndex, sdpMid:evt.sdpMid, candidate:evt.candidate});
                 console.log("Received Candidate...");
                 console.log(candidate);
+                clearInterval(this.timer);
                 peerConnection.addIceCandidate(candidate);
             },
 
@@ -215,8 +214,6 @@ $(function(){
                 console.log("---sending sdp text ---");
                 console.log(text);
                 this.sendSdp = text;
-
-                // send via socket
                 socket.json.send(sdp);
             },
 
@@ -224,26 +221,32 @@ $(function(){
                 var text = JSON.stringify(candidate);
                 console.log("---sending candidate text ---");
                 console.log(text);
-                this.sendIce = (this.sendIce + CR + iceSeparator + CR + text + CR);
-                //this.sendIce.scrollTop = textForSendICE.scrollHeight;
-
-                // send via socket
+                this.sendIce = (this.sendIce + CR + this.iceSeparator + CR + text + CR);
                 socket.json.send(candidate);
             },
 
             startVideo: function() {
                 navigator.webkitGetUserMedia({video: true, audio: true},
-                    function (stream) { // success
+                    function (stream) {
+                        console.log('getUserMedia success');
                         localStream = stream;
                         localVideo.src = window.webkitURL.createObjectURL(stream);
                         localVideo.play();
                         localVideo.volume = 0;
+                        socketView.tryConnect();
                     },
                     function (error) { // error
                         console.error('An error occurred: [CODE ' + error.code + ']');
                         return;
                     }
                 );
+            },
+
+            tryConnect: function() {
+                var that = this;
+                this.timer = setInterval(function(){
+                    that.connect();
+                }, 5000);
             },
 
             stopVideo: function() {
@@ -258,12 +261,14 @@ $(function(){
                     peer = new webkitRTCPeerConnection(pc_config);
                 } catch (e) {
                     console.log("Failed to create peerConnection, exception: " + e.message);
+                    return undefined;
                 }
 
+                var that = this;
                 peer.onicecandidate = function (evt) {
                     if (evt.candidate) {
                         console.log(evt.candidate);
-                        this.sendCandidate({type: "candidate",
+                        that.sendCandidate({type: "candidate",
                                 sdpMLineIndex: evt.candidate.sdpMLineIndex,
                                 sdpMid: evt.candidate.sdpMid,
                                 candidate: evt.candidate.candidate}
@@ -284,6 +289,7 @@ $(function(){
 
             onRemoteStreamAdded: function(event) {
                 console.log("Added remote stream");
+                clearInterval(this.timer);
                 remoteVideo.src = window.webkitURL.createObjectURL(event.stream);
             },
 
@@ -294,12 +300,17 @@ $(function(){
             },
 
             sendOffer: function() {
-                peerConnection = prepareNewConnection();
+                var that = this;
+                peerConnection = this.prepareNewConnection();
+                if (_.isUndefined(peerConnection)) {
+                    console.log('prepareNewConnection fail');
+                    return;
+                }
                 peerConnection.createOffer(function (sessionDescription) { // in case of success
                     peerConnection.setLocalDescription(sessionDescription);
                     console.log("Sending: SDP");
                     console.log(sessionDescription);
-                    this.sendSDP(sessionDescription);
+                    that.sendSDP(sessionDescription);
                 }, function () { // in case of error
                     console.log("Create Offer failed");
                 }, this.mediaConstraints);
@@ -309,7 +320,7 @@ $(function(){
                 if (peerConnection) {
                     console.error('peerConnection alreay exist!');
                 }
-                peerConnection = prepareNewConnection();
+                peerConnection = this.prepareNewConnection();
                 peerConnection.setRemoteDescription(new RTCSessionDescription(evt));
             },
 
@@ -320,11 +331,12 @@ $(function(){
                     return;
                 }
 
+                var that = this;
                 peerConnection.createAnswer(function (sessionDescription) { // in case of success
                     peerConnection.setLocalDescription(sessionDescription);
                     console.log("Sending: SDP");
                     console.log(sessionDescription);
-                    this.sendSDP(sessionDescription);
+                    that.sendSDP(sessionDescription);
                 }, function () { // in case of error
                     console.log("Create Answer failed");
                 }, this.mediaConstraints);
@@ -339,12 +351,12 @@ $(function(){
             },
 
             connect: function() {
-                if (!this.peerStarted && localStream && this.socketReady) { // **
+                if (localStream && this.socketReady) { // **
                     //if (!peerStarted && localStream) { // --
                     this.sendOffer();
                     this.peerStarted = true;
                 } else {
-                    alert("Local stream not running yet - try again.");
+                    console.log('localStream error');
                 }
             },
 
