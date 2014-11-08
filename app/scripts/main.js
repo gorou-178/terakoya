@@ -95,6 +95,43 @@ $.fn.drawMouse = function() {
 
 $(function(){
 
+    var chat = new Vue({
+        el: ".chat",
+        data: {
+            username: '',
+            message: '',
+            chats: []
+        },
+        created: function(){
+            console.log('chatHistory created');
+            this.username = 'ゲスト' + Math.floor(Math.random() * 100);
+        },
+        ready: function() {
+            console.log('chatHistory ready');
+        },
+        methods: {
+            addChat: function(message){
+                var date = $.format.date(new Date().getTime(), 'yyyyMMddHHmmss');
+                this.chats.unshift({name: this.username, message: message, date: date});
+            },
+            send: function(e) {
+                e.preventDefault();
+                if (!_.isEmpty(this.message)) {
+                    this.addChat(this.message);
+                    socket.emit('message',{
+                        act: 'chat',
+                        username: this.username,
+                        message: this.message
+                    });
+                    this.reset();
+                }
+            },
+            reset: function() {
+                this.message = '';
+            }
+        }
+    });
+
     var socketView = new Vue({
         el: '.live-video-box',
         template: '#live-video-tmpl',
@@ -146,16 +183,24 @@ $(function(){
                             ctx.strokeStyle = evt.color;
                             ctx.beginPath();
                             ctx.moveTo(evt.x, evt.y);
+                            break;
                         case "move":
                             console.log("remote: " + evt.x, evt.y);
                             ctx.lineTo(evt.x, evt.y);
                             ctx.stroke();
+                            break;
                         case "up":
                             if (!socketView.remote_down) return;
                             ctx.lineTo(evt.x, evt.y);
                             ctx.stroke();
                             ctx.closePath();
                             socketView.remote_down = false;
+                            break;
+                        case "chat":
+                            chat.addChat(evt.message);
+                            break;
+                        default:
+                            console.log('このアクションはサポートしていません');
                     }
                 }
             },
@@ -420,39 +465,5 @@ $(function(){
             }
         }
     });
-
-    var chat = new Vue({
-        el: ".chat",
-        data: {
-            username: '',
-            message: '',
-            chats: []
-        },
-        created: function(){
-            console.log('chatHistory created');
-            this.username = 'ゲスト' + Math.floor(Math.random() * 100);
-        },
-        ready: function() {
-            console.log('chatHistory ready');
-        },
-        methods: {
-            addChat: function(message){
-                var date = $.format.date(new Date().getTime(), 'yyyyMMddHHmmss');
-                this.chats.unshift({name: this.username, message: message, date: date});
-            },
-            send: function(e) {
-                e.preventDefault();
-                if (!_.isEmpty(this.message)) {
-                    this.addChat(this.message);
-                    this.reset();
-                }
-            },
-            reset: function() {
-                this.message = '';
-            }
-        }
-    });
-
-
 
 });
