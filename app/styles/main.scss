@@ -10,15 +10,12 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/boots
   padding: 0.2em 0;
 }
 
-/* Space out content a bit */
 body {
   padding-top: 5px;
   padding-bottom: 5px;
 }
 
-/* Everything but the jumbotron gets side spacing for mobile first views */
 .header,
-.marketing,
 .footer {
   padding-left: 15px;
   padding-right: 15px;
@@ -37,25 +34,10 @@ body {
   }
 }
 
-/* Custom page footer */
 .footer {
-  padding-top: 5px;
-  color: #777;
-  border-top: 1px solid #e5e5e5;
-}
-
-.container-narrow > hr {
-  margin: 30px 0;
-}
-
-/* Main marketing message and sign up button */
-.jumbotron {
-  text-align: center;
-  border-bottom: 1px solid #e5e5e5;
-  .btn {
-    font-size: 15px;
-    padding: 10px 20px;
-  }
+    padding-top: 5px;
+    color: #777;
+    border-top: 1px solid #e5e5e5;
 }
 
 .message {
@@ -64,11 +46,11 @@ body {
     padding: 0;
     margin: 0;
     overflow: hidden;
-}
-.message.v-enter, .msg.v-leave {
-    height: 0;
-    padding: 0;
-    margin: 0;
+    .v-enter, .msg.v-leave {
+        height: 0;
+        padding: 0;
+        margin: 0;
+    }
 }
 
 .inquiry {
@@ -79,16 +61,12 @@ body {
 .chat-history {
   margin: 0;
   padding: 0;
-}
-
-.chat-history ul {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-.chat-history li {
-  list-style: none;
+  ul {
+    width: 100%;
+  }
+  li {
+    list-style: none;
+  }
 }
 
 .well {
@@ -99,14 +77,6 @@ body {
   border: 1px solid #e3e3e3;
   border-radius: 4px;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-}
-
-/* Supporting marketing content */
-.marketing {
-  margin: 10px 0;
-  p + h4 {
-    margin-top: 28px;
-  }
 }
 
 #drawCanvas canvas {
@@ -179,7 +149,6 @@ body {
 
   /* Remove the padding we set earlier */
   .header,
-  .marketing,
   .footer {
     padding-left: 0;
     padding-right: 0;
@@ -190,8 +159,4 @@ body {
     margin-bottom: 15px;
   }
 
-  /* Remove the bottom border on the jumbotron for visual effect */
-  .jumbotron {
-    border-bottom: 0;
-  }
 }
