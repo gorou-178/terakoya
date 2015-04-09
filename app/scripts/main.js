@@ -137,7 +137,7 @@ $(function(){
         template: '#live-video-tmpl',
         data: {
             socketReady: false,
-            port: 9001,
+            port: 5000,
             sendSdp: '',
             sendIce: '',
             receiveSdp: '',
@@ -206,7 +206,7 @@ $(function(){
             },
 
             init: function() {
-                socket = io.connect('http://localhost:' + this.port + '/');
+                socket = io.connect('https://terakoya-signaling.herokuapp.com:' + this.port + '/');
                 socket.on('connect', this.onOpend)
                       .on('message', this.onMessage);
             },

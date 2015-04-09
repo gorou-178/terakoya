@@ -1,0 +1,16 @@
+<!DOCTYPE html> <html class=no-js> <head> <meta charset=utf-8> <title>terakoya</title> <meta name=description content=""> <meta name=viewport content="width=device-width"> <link rel="shortcut icon" href=/6df2b309.favicon.ico> <!-- Place favicon.ico and apple-touch-icon.png in the root directory --> <link rel=stylesheet href=styles/375d021c.vendor.css> <link rel=stylesheet href=styles/65a7b402.main.css> <script src=scripts/vendor/fbe20327.modernizr.js></script>  <body> <!--[if lt IE 10]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]--> <div class=container> <div class=header> <h3 class=text-muted>terakoya</h3> </div> <div class=row> <div class="col-md-7 live-video-box"> <video id=local-video class=real-time-video autoplay></video> <video id=remote-video class=real-time-video autoplay></video> <input type=hidden name=sendSdp v-model="sendSdp"> <input type=hidden name=sendIce v-model="sendIce"> <input type=hidden name=receiveSdp v-model="receiveSdp"> <input type=hidden name=receiveIce v-model="receiveIce"> </div> <div class="col-md-5 toolbar"> <div class=palette> <ul> <li v-repeat=palettes v-class="color, active: active" v-on="click: setColor(this)"></li> </ul> </div> <div class=brush> <ul> <li v-repeat=brushs v-on="click: setBrush(this)">{{sizeName}}</li> </ul> </div> <div id=drawCanvas></div> </div> </div> <div class=chat> <div class=row> <div class=col-md-12> <form v-on=submit:send> <div class="input-group inquiry"> <span class=input-group-addon v-on=click:send>質問</span> <input class=form-control placeholder=Message v-model="message"> </div> </form> </div> </div> <div class=row> <div class=col-md-12> <ul class=chat-history> <div class="well message" v-repeat=chats class=item-{{$index}} v-transition> <li> <span><i class="fa fa-user fa-fw"></i> {{name}}: {{message}}</span> </li> </div> </ul> </div> </div> </div> <div class=footer> <p><span class="glyphicon glyphicon-heart"></span> from the Yeoman team</p> </div> </div> <script src=scripts/db0ec541.vendor.js></script> <script src=bower_components/socket.io-client/socket.io.js></script> <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. --> <script>(function (b, o, i, l, e, r) {
+        b.GoogleAnalyticsObject = l;
+        b[l] || (b[l] =
+            function () {
+                (b[l].q = b[l].q || []).push(arguments)
+            });
+        b[l].l = +new Date;
+        e = o.createElement(i);
+        r = o.getElementsByTagName(i)[0];
+        e.src = '//www.google-analytics.com/analytics.js';
+        r.parentNode.insertBefore(e, r)
+    }(window, document, 'script', 'ga'));
+    ga('create', 'UA-XXXXX-X');
+    ga('send', 'pageview');</script> <script src=scripts/00c58f7b.main.js></script>  
